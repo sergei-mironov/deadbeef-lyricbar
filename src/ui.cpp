@@ -87,39 +87,44 @@ Justification get_justification() {
 
 extern "C"
 GtkWidget *construct_lyricbar() {
-	Gtk::Main::init_gtkmm_internals();
-	refBuffer = TextBuffer::create();
+  Gtk::Main::init_gtkmm_internals();
+  refBuffer = TextBuffer::create();
 
-	tagItalic = refBuffer->create_tag();
-	tagItalic->property_style() = Pango::STYLE_ITALIC;
+  tagItalic = refBuffer->create_tag();
+  tagItalic->property_style() = Pango::STYLE_ITALIC;
 
-	tagBold = refBuffer->create_tag();
-	tagBold->property_weight() = Pango::WEIGHT_BOLD;
+  tagBold = refBuffer->create_tag();
+  tagBold->property_weight() = Pango::WEIGHT_BOLD;
 
-	tagLarge = refBuffer->create_tag();
-	tagLarge->property_scale() = Pango::SCALE_LARGE;
+  tagLarge = refBuffer->create_tag();
+  tagLarge->property_scale() = Pango::SCALE_LARGE;
 
-	tagCenter = refBuffer->create_tag();
-	tagCenter->property_justification() = JUSTIFY_CENTER;
+  tagCenter = refBuffer->create_tag();
+  tagCenter->property_justification() = JUSTIFY_CENTER;
 
-	tagsTitle = {tagLarge, tagBold, tagCenter};
-	tagsArtist = {tagItalic, tagCenter};
+  // Create a new tag for font size
+  auto tagFontSize = refBuffer->create_tag();
+  tagFontSize->property_size() = 14 * PANGO_SCALE; // Set font size to 12 pt
 
-	lyricView = new TextView(refBuffer);
-	lyricView->set_editable(false);
-	lyricView->set_can_focus(false);
-	lyricView->set_justification(get_justification());
-	lyricView->set_wrap_mode(WRAP_WORD_CHAR);
-        if (get_justification() == JUSTIFY_LEFT) {
-           lyricView->set_left_margin(20);
-        }
-	lyricView->show();
+  // Add the new font size tag to existing title and artist tags
+  tagsTitle = {tagLarge, tagBold, tagCenter, tagFontSize};
+  tagsArtist = {tagItalic, tagCenter, tagFontSize};
 
-	lyricbar = new ScrolledWindow();
-	lyricbar->add(*lyricView);
-	lyricbar->set_policy(POLICY_AUTOMATIC, POLICY_AUTOMATIC);
+  lyricView = new TextView(refBuffer);
+  lyricView->set_editable(false);
+  lyricView->set_can_focus(false);
+  lyricView->set_justification(get_justification());
+  lyricView->set_wrap_mode(WRAP_WORD_CHAR);
+  if (get_justification() == JUSTIFY_LEFT) {
+    lyricView->set_left_margin(20);
+  }
+  lyricView->show();
 
-	return GTK_WIDGET(lyricbar->gobj());
+  lyricbar = new ScrolledWindow();
+  lyricbar->add(*lyricView);
+  lyricbar->set_policy(POLICY_AUTOMATIC, POLICY_AUTOMATIC);
+
+  return GTK_WIDGET(lyricbar->gobj());
 }
 
 extern "C"

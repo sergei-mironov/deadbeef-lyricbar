@@ -1,15 +1,13 @@
 with import <nixpkgs> {}; {
   lyricbar = stdenv.mkDerivation {
     name = "deadbeef-lyricbar";
+    src = ./.;
     buildInputs = [
       stdenv
-      pkgconfig
+      pkg-config
       gettext
-      gnome2.gtkmm
-      gnome3.gtkmm
-      gnome2.gtk
-      gnome3.gtk
       deadbeef
+      gtkmm3
       libxmlxx3
     ];
   };

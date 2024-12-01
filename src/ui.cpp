@@ -102,19 +102,26 @@ GtkWidget *construct_lyricbar() {
   tagCenter = refBuffer->create_tag();
   tagCenter->property_justification() = JUSTIFY_CENTER;
 
+  auto scale = 14 * PANGO_SCALE; // Set font size to 14 pt
   // Create a new tag for font size
   auto tagFontSize = refBuffer->create_tag();
-  tagFontSize->property_size() = 14 * PANGO_SCALE; // Set font size to 12 pt
+  tagFontSize->property_size() = scale;
 
   // Add the new font size tag to existing title and artist tags
   tagsTitle = {tagLarge, tagBold, tagCenter, tagFontSize};
   tagsArtist = {tagItalic, tagCenter, tagFontSize};
+
+  // Define a shared font description
+  Pango::FontDescription sharedFont;
+  sharedFont.set_family("Sans");
+  sharedFont.set_size(scale);
 
   lyricView = new TextView(refBuffer);
   lyricView->set_editable(false);
   lyricView->set_can_focus(false);
   lyricView->set_justification(get_justification());
   lyricView->set_wrap_mode(WRAP_WORD_CHAR);
+  lyricView->override_font(sharedFont); // Apply the shared font
   if (get_justification() == JUSTIFY_LEFT) {
     lyricView->set_left_margin(20);
   }
